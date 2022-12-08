@@ -39,18 +39,18 @@ namespace Api.Controllers
                 ResultCode = 0
             };
 
-            var book = await _level1Cache.GetByIdAsync(id);
-
-            if (book == null)
+            try
             {
-                book = await _level2Cache.GetByIdAsync(id);
-                if (book != null)
+                var book = await _level1Cache.GetByIdAsync(id);
+
+                if (book == null)
                 {
-                    await _level1Cache.AddAsync(book);
-                }
-                else
-                {
-                    try
+                    book = await _level2Cache.GetByIdAsync(id);
+                    if (book != null)
+                    {
+                        await _level1Cache.AddAsync(book);
+                    }
+                    else
                     {
                         var apiRes = await TaghcheApiService.GetCall(id.ToString());
                         if (apiRes.IsSuccess)
@@ -70,17 +70,17 @@ namespace Api.Controllers
                             throw new Exception(apiRes.ErrorMessage);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        res.IsSuccess = false;
-                        res.ResultCode = 500;
-                        res.ErrorMessage = ex.Message;
-                        return res;
-                    }
                 }
-            }
 
-            res.Data = book;
+                res.Data = book;
+            }
+            catch (Exception ex)
+            {
+                res.IsSuccess = false;
+                res.ResultCode = 500;
+                res.ErrorMessage = ex.Message;
+                return res;
+            }
 
             return res;
         }
