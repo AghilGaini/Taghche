@@ -49,6 +49,8 @@ namespace Api
                 }
             });
 
+            services.AddMemoryCache();
+
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

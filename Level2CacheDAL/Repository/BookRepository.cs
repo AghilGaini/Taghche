@@ -1,25 +1,30 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Level2CacheDAL.Repository
 {
     public class BookRepository : IBookDomain
     {
-        private static List<BookDomain> _books = new List<BookDomain>()
+        private IMemoryCache _memCache;
+
+        public BookRepository(IMemoryCache memCache)
         {
-            new BookDomain() { Id = 2 ,Description="test2" }
-        };
+            _memCache = memCache;
+        }
+
 
         public async Task<bool> AddAsync(BookDomain entity)
         {
             try
             {
-                _books.Add(entity);
+                _memCache.Set(entity.Id, entity);
                 return await Task.FromResult(true);
             }
             catch
@@ -30,7 +35,8 @@ namespace Level2CacheDAL.Repository
 
         public async Task<BookDomain> GetByIdAsync(long id)
         {
-            var book = _books.FirstOrDefault(r => r.Id == id);
+            var book = (BookDomain)_memCache.Get(id);
+
             return await Task.FromResult(book);
         }
     }
