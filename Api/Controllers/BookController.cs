@@ -55,10 +55,14 @@ namespace Api.Controllers
                         var apiRes = await TaghcheApiService.GetCall(id.ToString());
                         if (apiRes.IsSuccess)
                         {
+                            var model = (TaghcheApiResponseBookModel)apiRes.Data;
                             book = new BookDomain()
                             {
                                 Id = id,
-                                Description = apiRes.Data
+                                Description = model.Book.Description,
+                                Price = model.Book.Price,
+                                Title = model.Book.Title,
+                                numberOfPages = model.Book.numberOfPages,
                             };
 
                             await _level1Cache.AddAsync(book);

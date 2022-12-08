@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Core.Services
@@ -28,17 +29,20 @@ namespace Core.Services
                 var client = new RestClient($"{BaseUrlAddress}{query}");
 
                 var request = new RestRequest();
-                var response = await client.ExecuteAsync(request);
+                var responseContent = await client.ExecuteAsync(request);
 
-                if (!response.IsSuccessStatusCode)
+                var deserializeResponse = JsonSerializer.Deserialize<TaghcheApiResponseBookModel>
+                    (responseContent.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                if (!responseContent.IsSuccessStatusCode)
                 {
-                    res.ResultCode = (int)response.StatusCode;
+                    res.ResultCode = (int)responseContent.StatusCode;
                     res.IsSuccess = false;
-                    res.ErrorMessage = $"Status : {response.StatusCode}";
+                    res.ErrorMessage = $"Status : {responseContent.StatusCode}";
                 }
                 else
                 {
-                    res.Data = response.Content;
+                    res.Data = deserializeResponse;
                 }
 
             }

@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace Domain.ApiModel
 {
-    public class BookDomain
+    public class TaghcheApiResponseBookModel
+    {
+        public TaghcheApiResponseBookDetailModel Book { get; set; } = new TaghcheApiResponseBookDetailModel();
+    }
+
+    public class TaghcheApiResponseBookDetailModel
     {
         public long Id { get; set; }
         public string Title { get; set; }
